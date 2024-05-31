@@ -1,0 +1,25 @@
+version: "3.8"
+name: maintenance
+services:
+  app:
+    image: "bramanda48/maintenance:latest"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: malang.dev
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.maintenance.rule=Host(`malang.dev`) || Host(`malang.agency`)"
+      - "traefik.http.routers.maintenance.entrypoints=websecure"
+      - "traefik.http.routers.maintenance.tls.certresolver=letsencrypt"
+      - "traefik.http.services.maintenance.loadbalancer.server.port=3000"
+    volumes:
+      - ./:/app
+    networks:
+      - gateway
+      
+networks:
+  gateway:
+    name: gateway
+    external: true
